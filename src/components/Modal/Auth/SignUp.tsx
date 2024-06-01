@@ -1,6 +1,9 @@
 import { authModalState } from "@/atoms/authModalAtom";
-import { Input, Button, Flex, Text } from "@chakra-ui/react";
+import { auth } from "@/firebase/clientApp";
+import { FIREBASE_ERRORS } from "@/firebase/errors";
+import { Button, Flex, Input, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
+import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useSetRecoilState } from "recoil";
 
 const SignUp: React.FC = () => {
@@ -11,7 +14,24 @@ const SignUp: React.FC = () => {
     confirmPassword: "",
   });
 
-  const handleSubmit = () => {};
+  const [error, setError] = useState("");
+
+  const [createUserWithEmailAndPassword, user, loading, userError] =
+    useCreateUserWithEmailAndPassword(auth);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (error) setError("");
+
+    if (signUpState.password !== signUpState.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    // passwords match
+    createUserWithEmailAndPassword(signUpState.email, signUpState.password);
+  };
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // update form  state
@@ -45,8 +65,10 @@ const SignUp: React.FC = () => {
         }}
         bg="gray.50"
       />
+
       <Input
         required
+        minLength={6}
         name="password"
         placeholder="password"
         type="password"
@@ -89,7 +111,20 @@ const SignUp: React.FC = () => {
         }}
         bg="gray.50"
       />
-      <Button width="100%" height="36px" mt={2} mb={2} type="submit">
+
+      <Text textAlign="center" color="red" fontSize="10pt">
+        {error ||
+          FIREBASE_ERRORS[userError?.message as keyof typeof FIREBASE_ERRORS]}
+      </Text>
+
+      <Button
+        width="100%"
+        height="36px"
+        mt={2}
+        mb={2}
+        type="submit"
+        isLoading={loading}
+      >
         Sign Up
       </Button>
       <Flex fontSize="9pt" justify="center">
