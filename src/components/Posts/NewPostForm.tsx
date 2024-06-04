@@ -61,7 +61,7 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
     const { communityId } = router.query;
 
     // construct new post object => Type Post
-    const newPost = {
+    const newPost: Post = {
       communityId: communityId as string,
       creatorId: user.uid,
       creatorDisplayName: user.email!.split("@")[0],
