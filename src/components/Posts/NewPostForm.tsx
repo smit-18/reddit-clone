@@ -61,7 +61,7 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
     const { communityId } = router.query;
 
     // construct new post object => Type Post
-    const newPost: Post = {
+    const newPost = {
       communityId: communityId as string,
       creatorId: user.uid,
       creatorDisplayName: user.email!.split("@")[0],
@@ -89,14 +89,14 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
           imageURL: downloadURL,
         });
       }
+
+      // redirect the user back to the communityPage using the router
+      router.back();
     } catch (error: any) {
       console.log("handleCreatePost error", error.message);
       setError(true);
     }
     setLoading(false);
-
-    // redirect the user back to the communityPage using the router
-    // router.back()
   };
 
   const onSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
