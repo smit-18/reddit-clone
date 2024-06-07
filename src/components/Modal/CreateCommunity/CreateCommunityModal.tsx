@@ -24,6 +24,7 @@ import {
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { BsFillEyeFill, BsFillPersonFill } from "react-icons/bs";
@@ -39,6 +40,7 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
   handleClose,
 }) => {
   const [user] = useAuthState(auth);
+  const router = useRouter();
   const [communityName, setCommunityName] = useState("");
   const [charsRemaining, setCharsRemaining] = useState(21);
   const [communityType, setCommunityType] = useState("public");
@@ -104,7 +106,8 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
       console.log("handleCreateCommunity error", error);
       setError(error.message);
     }
-
+    handleClose();
+    router.push(`r/${communityName}`);
     setLoading(false);
   };
 

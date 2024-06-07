@@ -3,7 +3,7 @@ import { Post } from "@/atoms/postsAtom";
 import { auth, firestore } from "@/firebase/clientApp";
 import usePosts from "@/hooks/usePosts";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import PostItem from "./PostItem";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Stack } from "@chakra-ui/react";
@@ -24,7 +24,7 @@ const Posts: React.FC<PostsProps> = ({ communityData }) => {
     onSelectPost,
   } = usePosts();
 
-  const getPosts = async () => {
+  const getPosts = useCallback(async () => {
     setLoading(true);
     try {
       // get posts for this community
@@ -48,12 +48,11 @@ const Posts: React.FC<PostsProps> = ({ communityData }) => {
       console.log("getPosts error", error.message);
     }
     setLoading(false);
-  };
+  }, [communityData.id, setPostStateValue]);
 
   useEffect(() => {
     getPosts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getPosts]);
 
   return (
     <>
