@@ -1,4 +1,5 @@
 import { auth, firestore } from "@/firebase/clientApp";
+import useDirectory from "@/hooks/useDirectory";
 import {
   Box,
   Button,
@@ -46,6 +47,7 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
   const [communityType, setCommunityType] = useState("public");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { toggleMenuOpen } = useDirectory();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.length > 21) return;
@@ -102,12 +104,18 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
           }
         );
       });
+      handleClose();
+      toggleMenuOpen();
+      if (router.pathname.includes("/r/")) {
+        router.push(communityName);
+      } else {
+        router.push(`r/${communityName}`);
+      }
     } catch (error: any) {
       console.log("handleCreateCommunity error", error);
       setError(error.message);
     }
-    handleClose();
-    router.push(`r/${communityName}`);
+
     setLoading(false);
   };
 
