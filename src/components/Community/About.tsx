@@ -12,7 +12,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, writeBatch } from "firebase/firestore";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import moment from "moment";
 import Link from "next/link";
@@ -40,12 +40,26 @@ const About: React.FC<AboutProps> = ({ communityData }) => {
 
     setUploadingImage(true);
     try {
+      const batch = writeBatch(firestore);
       const imageRef = ref(storage, `communities/${communityData.id}/image`);
       await uploadString(imageRef, selectedFile, "data_url");
       const downloadURL = await getDownloadURL(imageRef);
-      await updateDoc(doc(firestore, "communities", communityData.id), {
+
+      batch.update(doc(firestore, "communities", communityData.id), {
         imageURL: downloadURL,
       });
+
+      batch.update(
+        doc(
+          firestore,
+          `users/${user?.uid}/communitySnippets/${communityData.id}`
+        ),
+        {
+          imageURL: downloadURL,
+        }
+      );
+
+      await batch.commit();
 
       setCommunityStateValue((prev) => ({
         ...prev,
