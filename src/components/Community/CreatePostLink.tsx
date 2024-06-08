@@ -1,8 +1,6 @@
 import { authModalState } from "@/atoms/authModalAtom";
 import { auth } from "@/firebase/clientApp";
-import useDirectory from "@/hooks/useDirectory";
-import { Flex, Icon, Input } from "@chakra-ui/react";
-import Link from "next/link";
+import { Flex, Icon, Input, useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -15,7 +13,7 @@ const CreatePostLink: React.FC = () => {
   const router = useRouter();
   const [user] = useAuthState(auth);
   const setAuthModalState = useSetRecoilState(authModalState);
-  const { toggleMenuOpen } = useDirectory();
+  const toast = useToast();
 
   const onClick = () => {
     if (!user) {
@@ -28,8 +26,13 @@ const CreatePostLink: React.FC = () => {
       return;
     }
 
-    // open our directory menu
-    toggleMenuOpen();
+    toast({
+      title: "Select a Community",
+      description: "Please select a community to post into.",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
   };
 
   return (
